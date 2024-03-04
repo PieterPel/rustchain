@@ -29,5 +29,7 @@ fn main() {
         nonce = nonce + 1;
     }
 
-    println!("{:?}", block_chain.all_data())
+    println!("{:?}", block_chain.all_data());
+
+    println!("{:?}", block_chain.verify_hashes());
 }
