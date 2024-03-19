@@ -18,4 +18,14 @@ impl fmt::Display for StringBytes {
     }
 }
 
+impl fmt::Debug for StringBytes {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "StringBytes {{ bytes: ")?;
+        for byte in &self.bytes {
+            write!(f, "{:02X} ", byte)?;
+        }
+        write!(f, "}}")
+    }
+}
+
 impl ValidData for StringBytes {}

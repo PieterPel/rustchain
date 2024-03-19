@@ -1,9 +1,7 @@
 use rustchain::BlockChain;
 use rustchain::Person;
 
-mod utils;
-
-use crate::utils::StringBytes;
+use rustchain::utils::StringBytes;
 
 fn main() {
     let mut block_chain = BlockChain::<StringBytes>::new();

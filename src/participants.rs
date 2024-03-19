@@ -26,11 +26,15 @@ impl Person {
         }
     }
 
-    fn encrypt_message(&self, message: &str, other_public_key: &PKeyRef<Public>) -> Vec<u8> {
+    fn encrypt_message(&self, message: &str, other_public_key_pem: &[u8]) -> Vec<u8> {
         let message_bytes = message.as_bytes();
 
+        // Convert the public key bytes to PKey<Public>
+        let other_public_key = PKey::public_key_from_pem(other_public_key_pem)
+            .expect("Failed to create PKey from public key bytes");
+
         // Encrypt message using the other public key
-        let mut encrypter = Encrypter::new(other_public_key).unwrap();
+        let mut encrypter = Encrypter::new(&other_public_key).unwrap();
         encrypter.set_rsa_padding(Padding::PKCS1).unwrap();
 
         let buffer_len = encrypter.encrypt_len(message_bytes).unwrap();
@@ -45,7 +49,7 @@ impl Person {
     pub fn send_message(
         self,
         message: &str,
-        other_public_key: &PKeyRef<Public>,
+        other_public_key: &[u8],
         block_chain: &mut BlockChain<StringBytes>,
     ) {
         let encrypted_message = self.encrypt_message(message, other_public_key);
@@ -84,7 +88,8 @@ fn generate_key_pair() -> (Rsa<Private>, Vec<u8>) {
         Rsa::generate(PAIR_SIZE_IN_BITS).expect("Failed to generate RSA key pair");
 
     // Extract the public key
-    let public_key = rsa_certificate
+    let public_key = PKey::from_rsa(rsa_certificate.clone())
+        .expect("Failed to create Public Key from RSA certificate")
         .public_key_to_pem()
         .expect("Failed to convert public key to PEM format");
 
