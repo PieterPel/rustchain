@@ -1,33 +1,19 @@
 use rustchain::BlockChain;
+use rustchain::Person;
+
+mod utils;
+
+use crate::utils::StringBytes;
 
 fn main() {
-    let mut block_chain = BlockChain::new();
+    let mut block_chain = BlockChain::<StringBytes>::new();
 
-    let new_data = "I am the second block!".to_string();
+    let alice = Person::new();
+    let bob = Person::new();
 
-    let mut nonce: u64 = 1;
-    loop {
-        let data = new_data.clone();
+    let message = "Hello Alice, I am Bob!".to_string();
 
-        let new_block = block_chain.new_block(data, nonce);
-
-        match block_chain.try_adding_block(new_block) {
-            Ok(()) => {
-                // Our nonce gives a good hash!
-                println!(
-                    "Nonce {} gives good hash: {}",
-                    nonce,
-                    block_chain.last_hash()
-                );
-                break;
-            }
-            Err(_error) => {
-                //println!("Nonce {} gives a bad hash: {}", nonce, _error);
-            }
-        }
-
-        nonce = nonce + 1;
-    }
+    bob.send_message(&message, &alice.public_key, &mut block_chain);
 
     println!("{:?}", block_chain.all_data());
 
